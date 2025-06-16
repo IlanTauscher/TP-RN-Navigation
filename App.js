@@ -1,185 +1,240 @@
 import * as React from 'react';
-import { Button, TextInput, Text, View, StyleSheet, Image } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { Button, TextInput, Text, View, StyleSheet, Image, SafeAreaView, StatusBar } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
-// --- Stack A Screens (HOME) ---
-function ScreenA1({ navigation }) {
+function PantallaInicio({ navigation }) {
   const [nombre, setNombre] = React.useState('');
   const [telefono, setTelefono] = React.useState('');
 
   return (
-    <View style={styles.homeScreen}>
-      <Text style={styles.text}>Pantalla A1</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        onChangeText={setNombre}
-        value={nombre}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Teléfono"
-        onChangeText={setTelefono}
-        value={telefono}
-        keyboardType="phone-pad"
-      />
-      <Button
-        title="Ir a A2"
-        onPress={() => navigation.navigate('ScreenA2', { nombre, telefono })}
-      />
+    <View style={styles.contenedorInicio}>
+      <Text style={styles.titulo}>Registro de Usuario</Text>
+      <TextInput style={styles.entrada} placeholder="Ingrese su nombre" value={nombre} onChangeText={setNombre}/>
+      <TextInput style={styles.entrada} placeholder="Ingrese su teléfono" value={telefono} onChangeText={setTelefono} keyboardType="phone-pad"/>
+      <Button title="Continuar" onPress={() => navigation.navigate('PantallaDetalle', { nombre, telefono })}/>
     </View>
   );
 }
 
-function ScreenA2({ route }) {
-  const { nombre, telefono } = route.params || {};
+function PantallaDetalle({ route, navigation }) {
+  const { nombre, telefono } = route.params;
+  const [comentario, setComentario] = React.useState('');
+
   return (
-    <View style={styles.homeScreen}>
-      <Text style={styles.text}>Pantalla A2</Text>
-      <Text style={styles.text}>Nombre: {nombre}</Text>
-      <Text style={styles.text}>Teléfono: {telefono}</Text>
+    <View style={styles.contenedorInicio}>
+      <Text style={styles.titulo}>Datos Ingresados</Text>
+      <Text style={styles.texto}>Nombre: {nombre}</Text>
+      <Text style={styles.texto}>Teléfono: {telefono}</Text>
+      <TextInput style={styles.entrada} placeholder="Escribe un comentario" value={comentario} onChangeText={setComentario}/>
+      <Button title="Volver" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
-// --- Stack B Screens (Buscador) ---
-function ScreenB1({ navigation }) {
+function BusquedaInicio({ navigation }) {
+  const [consulta, setConsulta] = React.useState('');
+
   return (
-    <View style={styles.searchScreen}>
-      <Text style={styles.text}>Buscador 1</Text>
-      <Button title="Ir a Buscador 2" onPress={() => navigation.navigate('ScreenB2')} />
+    <View style={styles.contenedorBusqueda}>
+      <Text style={styles.titulo}>Buscador</Text>
+      <TextInput style={styles.entrada} placeholder="¿Qué quieres buscar?" value={consulta} onChangeText={setConsulta}/>
+      <Button title="Buscar" onPress={() => navigation.navigate('BuscadorResultado', { consulta })}/>
     </View>
   );
 }
 
-function ScreenB2() {
+function BuscadorResultado({ route, navigation }) {
+  const { consulta } = route.params;
+  const [nota, setNota] = React.useState('');
+
   return (
-    <View style={styles.searchScreen}>
-      <Text style={styles.text}>Buscador 2</Text>
-      <Image
-        source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-        style={{ width: 100, height: 100 }}
-      />
+    <View style={styles.contenedorBusqueda}>
+      <Text style={styles.titulo}>Resultado de: {consulta}</Text>
+      <Image source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} style={styles.imagen}/>
+      <TextInput style={styles.entrada} placeholder="Deja tu nota" value={nota} onChangeText={setNota}/>
+      <Button title="Enviar nota" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
-// --- Stack C Screens (Perfil) ---
-function ScreenC1({ navigation }) {
+function PerfilInicio({ navigation }) {
+  const [usuario, setUsuario] = React.useState('');
+
   return (
-    <View style={styles.profileScreen}>
-      <Text style={styles.text}>Perfil 1</Text>
-      <Button title="Ir a Perfil 2" onPress={() => navigation.navigate('ScreenC2')} />
+    <View style={styles.contenedorPerfil}>
+      <Text style={styles.titulo}>Mi Perfil</Text>
+      <TextInput style={styles.entrada} placeholder="Nombre de usuario" value={usuario} onChangeText={setUsuario}/>
+      <Button title="Ver Detalle" onPress={() => navigation.navigate('PerfilDetalle', { usuario })}/>
     </View>
   );
 }
 
-function ScreenC2() {
+function PerfilDetalle({ route, navigation }) {
+  const { usuario } = route.params;
+  const [bio, setBio] = React.useState('');
+
   return (
-    <View style={styles.profileScreen}>
-      <Text style={styles.text}>Perfil 2</Text>
-      <Image
-        source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-        style={{ width: 100, height: 100 }}
-      />
+    <View style={styles.contenedorPerfil}>
+      <Text style={styles.titulo}>Detalles de {usuario}</Text>
+      <Image source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} style={styles.imagen}/>
+      <TextInput style={styles.entrada} placeholder="Escribe tu biografía" value={bio} onChangeText={setBio}/>
+      <Button title="Guardar" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
-// --- Stack Navigators ---
-const StackA = createNativeStackNavigator();
-const StackB = createNativeStackNavigator();
-const StackC = createNativeStackNavigator();
+function ConfiguracionInicio({ navigation }) {
+  const [modo, setModo] = React.useState('');
 
-function StackANavigator() {
   return (
-    <StackA.Navigator>
-      <StackA.Screen name="ScreenA1" component={ScreenA1} />
-      <StackA.Screen name="ScreenA2" component={ScreenA2} />
-    </StackA.Navigator>
+    <View style={styles.contenedorConfiguracion}>
+      <Text style={styles.titulo}>Configuración</Text>
+      <TextInput style={styles.entrada} placeholder="Modo de la app" value={modo} onChangeText={setModo}/>
+      <Button title="Ir a Ajustes" onPress={() => navigation.navigate('ConfiguracionDetalle', { modo })}/>
+    </View>
   );
 }
 
-function StackBNavigator() {
+function ConfiguracionDetalle({ route, navigation }) {
+  const { modo } = route.params;
+  const [valor, setValor] = React.useState('');
+
   return (
-    <StackB.Navigator>
-      <StackB.Screen name="ScreenB1" component={ScreenB1} />
-      <StackB.Screen name="ScreenB2" component={ScreenB2} />
-    </StackB.Navigator>
+    <View style={styles.contenedorConfiguracion}>
+      <Text style={styles.titulo}>Ajustes Avanzados</Text>
+      <Text style={styles.texto}>Modo actual: {modo}</Text>
+      <TextInput style={styles.entrada} placeholder="Nuevo valor" value={valor} onChangeText={setValor}/>
+      <Button title="Aplicar" onPress={() => navigation.goBack()} />
+    </View>
   );
 }
 
-function StackCNavigator() {
+const Stack = createNativeStackNavigator();
+
+function NavegadorInicio() {
   return (
-    <StackC.Navigator>
-      <StackC.Screen name="ScreenC1" component={ScreenC1} />
-      <StackC.Screen name="ScreenC2" component={ScreenC2} />
-    </StackC.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="PantallaInicio" component={PantallaInicio} options={{ title: 'Inicio' }} />
+      <Stack.Screen name="PantallaDetalle" component={PantallaDetalle} options={{ title: 'Detalle' }} />
+    </Stack.Navigator>
   );
 }
 
-// --- Bottom Tabs ---
+function NavegadorBusqueda() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="BusquedaInicio" component={BusquedaInicio} options={{ title: 'Buscador' }} />
+      <Stack.Screen name="BuscadorResultado" component={BuscadorResultado} options={{ title: 'Resultado' }} />
+    </Stack.Navigator>
+  );
+}
+
+function NavegadorPerfil() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="PerfilInicio" component={PerfilInicio} options={{ title: 'Perfil' }} />
+      <Stack.Screen name="PerfilDetalle" component={PerfilDetalle} options={{ title: 'Editar' }} />
+    </Stack.Navigator>
+  );
+}
+
+function NavegadorConfiguracion() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ConfiguracionInicio" component={ConfiguracionInicio} options={{ title: 'Configuración' }} />
+      <Stack.Screen name="ConfiguracionDetalle" component={ConfiguracionDetalle} options={{ title: 'Ajustes' }} />
+    </Stack.Navigator>
+  );
+}
+
 const Tab = createBottomTabNavigator();
-function MyTabs() {
+
+function NavegacionPrincipal() {
   return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        let iconName;
-        if (route.name === 'Home') iconName = 'home';
-        else if (route.name === 'Buscador') iconName = 'search';
-        else if (route.name === 'Perfil') iconName = 'person';
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-    })}>
-      <Tab.Screen name="Home" component={StackANavigator} />
-      <Tab.Screen name="Buscador" component={StackBNavigator} />
-      <Tab.Screen name="Perfil" component={StackCNavigator} />
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => {
+          let icono = 'help';
+          if (route.name === 'Inicio') icono = 'home';
+          else if (route.name === 'Buscador') icono = 'search';
+          else if (route.name === 'Perfil') icono = 'person';
+          else if (route.name === 'Configuración') icono = 'settings';
+          return <Ionicons name={icono} size={size} color={color} />;
+        },
+      })}>
+      <Tab.Screen name="Inicio" component={NavegadorInicio} />
+      <Tab.Screen name="Buscador" component={NavegadorBusqueda} />
+      <Tab.Screen name="Perfil" component={NavegadorPerfil} />
+      <Tab.Screen name="Configuración" component={NavegadorConfiguracion} />
     </Tab.Navigator>
   );
 }
 
-// --- App Wrapper ---
 export default function App() {
   return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar/>
+      <NavigationContainer>
+        <NavegacionPrincipal />
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
-// --- Styles ---
 const styles = StyleSheet.create({
-  text: {
+  titulo: {
+    color: 'white',
+    fontSize: 22,
+    marginBottom: 20,
+    fontWeight: 'bold',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  texto: {
     color: 'white',
     fontSize: 18,
     marginBottom: 10,
   },
-  input: {
+  entrada: {
     backgroundColor: 'white',
-    padding: 8,
-    marginBottom: 10,
+    padding: 10,
+    marginBottom: 15,
     width: '80%',
-    borderRadius: 5,
+    borderRadius: 8,
   },
-  homeScreen: {
+  contenedorInicio: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1e90ff',
   },
-  searchScreen: {
+  contenedorBusqueda: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#228b22',
   },
-  profileScreen: {
+  contenedorPerfil: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#8b008b',
+  },
+  contenedorConfiguracion: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ff8c00',
+  },
+  imagen: {
+    width: 100,
+    height: 100,
+    marginTop: 15,
   },
 });
